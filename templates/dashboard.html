@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InBrief Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background: linear-gradient(135deg, #1976D2 0%, #BBDEFB 100%);
+            color: #333;
+            margin: 0;
+            min-height: 100vh;
+            animation: gradientShift 15s ease-in-out infinite;
+        }
+        @keyframes gradientShift {
+            0%, 100% { background: linear-gradient(135deg, #1976D2 0%, #BBDEFB 100%); }
+            50% { background: linear-gradient(135deg, #1565C0 0%, #90CAF9 100%); }
+        }
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #1976D2;
+        }
+        .header-buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .logo-text {
+            color: #1976D2;
+            font-size: 1.8rem;
+            font-weight: bold;
+            letter-spacing: 1.2px;
+        }
+        .logo-subtext {
+            font-size: 1.1rem;
+            color: #555;
+            margin-top: 4px;
+        }
+        .main-title {
+            color: #1976D2;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.4rem;
+            font-weight: 800;
+            text-align: center;
+            margin: 32px 0;
+            letter-spacing: 1.5px;
+        }
+        .main-title span {
+            display: inline-block;
+            margin-right: 8px;
+        }
+        .main-title .admin-text {
+            font-weight: 600;
+            font-size: 2rem;
+            color: #555;
+            margin-left: 8px;
+        }
+        .user-info {
+            background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        .user-info::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: shimmer 3s infinite;
+        }
+        h2 {
+            color: #1976D2;
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+        }
+        h3 {
+            color: #1976D2;
+            text-align: center;
+            font-size: 1.8rem;
+            margin: 2.5rem 0;
+        }
+        label {
+            display: block;
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 16px;
+            margin-top: 8px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #1976D2;
+            box-shadow: 0 0 12px rgba(25, 118, 210, 0.2);
+            transform: translateY(-2px);
+        }
+        button {
+            margin-top: 24px;
+            padding: 16px 28px;
+            background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+        }
+        button:hover {
+            background: linear-gradient(135deg, #1565C0 0%, #0D47A1 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(25, 118, 210, 0.4);
+        }
+        .logout-btn {
+            background: linear-gradient(135deg, #D32F2F 0%, #B71C1C 100%);
+            font-size: 1.1rem;
+            padding: 12px 24px;
+            box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
+        }
+        .logout-btn:hover {
+            background: linear-gradient(135deg, #B71C1C 0%, #8E0000 100%);
+            box-shadow: 0 8px 20px rgba(211, 47, 47, 0.4);
+        }
+        .assign-btn {
+            background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+            font-size: 1.1rem;
+            padding: 12px 24px;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+        .assign-btn:hover {
+            background: linear-gradient(135deg, #388E3C 0%, #2E7D32 100%);
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.4);
+        }
+        
+        /* Preview button hover effects */
+        #showPreviewBtn:hover, #editShowPreviewBtn:hover {
+            background: linear-gradient(135deg, #388E3C 0%, #2E7D32 100%) !important;
+            box-shadow: 0 8px 20px rgba(67, 160, 71, 0.4) !important;
+            transform: translateY(-2px);
+        }
+        .success {
+            color: #4CAF50;
+            margin-top: 12px;
+            font-size: 1.1rem;
+        }
+        .error {
+            color: #D32F2F;
+            margin-top: 12px;
+            font-size: 1.1rem;
+        }
+        #imagePreview, #editImagePreview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 12px;
+        }
+        #imagePreview img, #editImagePreview img {
+            max-width: 100px;
+            max-height: 100px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+        hr {
+            margin: 40px 0;
+            border: 1px solid #ccc;
+        }
+        table {
+            width: 100%;
+            background: white;
+            border-radius: 16px;
+            border-collapse: collapse;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            font-size: 1.1rem;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 16px;
+            text-align: left;
+        }
+        th {
+            background: #1976D2;
+            color: white;
+            font-weight: 500;
+            font-size: 1.2rem;
+        }
+        tr:nth-child(even) {
+            background: #f5f5f5;
+        }
+        tr:hover {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(25, 118, 210, 0.1);
+            transition: all 0.3s ease;
+        }
+        .filters {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        .filter-group label {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 6px;
+        }
+        .category-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-right: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .category-badge:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        .category-Finance { background: #E3F2FD; color: #1976D2; }
+        .category-Healthcare { background: #E8F5E9; color: #43A047; }
+        .category-Achievement { background: #FFF3E0; color: #EF6C00; }
+        .category-Notice { background: #F3E5F5; color: #8E24AA; }
+        .category-Urgent { background: #FFEBEE; color: #D32F2F; }
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        /* Preview modal should always be on top */
+        #previewModal {
+            z-index: 2000;
+        }
+        .modal-content {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .modal-content h2 {
+            margin-top: 0;
+        }
+        .close-btn {
+            float: right;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #333;
+        }
+        .admin-assign-section {
+            margin-bottom: 24px;
+        }
+        @media (max-width: 600px) {
+            .container {
+                margin: 20px;
+                padding: 16px;
+            }
+            .filters {
+                flex-direction: column;
+            }
+            .filter-group {
+                width: 100%;
+            }
+            .main-title {
+                font-size: 2rem;
+            }
+            table {
+                font-size: 1rem;
+            }
+            th, td {
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <span class="logo-text">NAVITASYS</span><br>
+                <span class="logo-subtext">A TDK Group Company</span>
+            </div>
+            <div>
+                <span class="logo-text">CoE</span><br>
+                <span class="logo-subtext">Centre Of Excellence</span>
+            </div>
+            <div class="header-buttons">
+                <a href="{{ url_for('logout') }}"><button class="logout-btn">Logout</button></a>
+                <button id="assignAdminBtn" class="assign-btn">Assign Admin</button>
+            </div>
+        </div>
+        <div class="user-info">
+            Logged in as: {{ employee_name }}
+        </div>
+
+        <!-- Admin Assign Section -->
+        <div class="admin-assign-section">
+            <form id="assignAdminForm" style="display: none; margin-top: 16px;">
+                <label for="adminEmpId">Employee ID to Assign Admin Access</label>
+                <input type="text" id="adminEmpId" placeholder="e.g. 9025857" required>
+                <button type="submit">Submit</button>
+                <div id="assignMessage"></div>
+            </form>
+        </div>
+
+        <h1 class="main-title">
+            <span>InBrief</span>
+            <span class="admin-text">Admin Dashboard</span>
+        </h1>
+
+        <form id="newsForm">
+            <label for="headline">Headline (supports emojis and links) <span style="color:#666;font-size:1rem;">(optional)</span></label>
+            <input type="text" id="headline" placeholder="e.g. 🎉 New Event!">
+
+            <label for="category">Category</label>
+            <select id="category">
+                <option value="">Select a category</option>
+                {% for category in categories %}
+                <option value="{{ category }}">{{ category }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="description">Description (supports emojis and links, e.g. https://...)</label>
+            <textarea id="description" rows="4" placeholder="e.g. Details here 😊 https://navitasys.com"></textarea>
+
+            <label for="image">Images (optional)</label>
+            <input type="file" id="image" accept="image/*" multiple>
+            <div id="imagePreview"></div>
+            <div style="display: flex; gap: 16px; align-items: center;">
+                <button type="button" id="showPreviewBtn" style="background: linear-gradient(135deg, #43A047 0%, #388E3C 100%); padding: 12px 20px; border-radius: 8px; color: white; font-weight: 600; box-shadow: 0 4px 12px rgba(67, 160, 71, 0.3);">
+                    👁️ Show Preview
+                </button>
+                <button type="submit">Push News</button>
+            </div>
+            <div id="message"></div>
+        </form>
+
+        <!-- Post Preview Modal -->
+        <div id="postPreviewModal" class="modal">
+            <div class="modal-content" style="max-width: 98vw; max-height: 98vh; overflow: auto;">
+                <span class="close-btn" onclick="closePostPreviewModal()">×</span>
+                <h2 style="text-align:center;">Post Preview - How it appears in the app</h2>
+                <div style="display: flex; flex-wrap: wrap; gap: 32px; justify-content: center; align-items: flex-start;">
+                    <div>
+                        <div style="text-align:center; margin-bottom:8px; font-weight:600;">Light Mode</div>
+                        <div id="postPreviewLight" class="previewScreen" style="width: 250px; height: 550px; border: 2px solid #bbb; border-radius: 32px; background: #E0F2F1; box-shadow: 0 4px 24px rgba(0,0,0,0.12); overflow: hidden; position: relative;"></div>
+                    </div>
+                    <div>
+                        <div style="text-align:center; margin-bottom:8px; font-weight:600;">Dark Mode</div>
+                        <div id="postPreviewDark" class="previewScreen" style="width: 250px; height: 550px; border: 2px solid #222; border-radius: 32px; background: #1A1A1A; box-shadow: 0 4px 24px rgba(0,0,0,0.18); overflow: hidden; position: relative;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Original Preview Modal -->
+        <div id="previewModal" class="modal">
+            <div class="modal-content" id="previewModalContent" style="max-width: 98vw; max-height: 98vh; overflow: auto;">
+                <span class="close-btn" onclick="closePreviewModal()">×</span>
+                <h2 style="text-align:center;">Post Preview</h2>
+                <div id="previewScaleWrap" style="display: flex; flex-wrap: wrap; gap: 32px; justify-content: center; align-items: flex-start;">
+                    <div>
+                        <div style="text-align:center; margin-bottom:8px; font-weight:600;">Light Mode</div>
+                        <div id="previewLight" class="previewScreen" style="width: 250px; height: 550px; border: 2px solid #bbb; border-radius: 32px; background: #E0F2F1; box-shadow: 0 4px 24px rgba(0,0,0,0.12); overflow: hidden; position: relative;"></div>
+                    </div>
+                    <div>
+                        <div style="text-align:center; margin-bottom:8px; font-weight:600;">Dark Mode</div>
+                        <div id="previewDark" class="previewScreen" style="width: 250px; height: 550px; border: 2px solid #222; border-radius: 32px; background: #1A1A1A; box-shadow: 0 4px 24px rgba(0,0,0,0.18); overflow: hidden; position: relative;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            @media (max-width: 900px) {
+                #previewScaleWrap { flex-direction: column; align-items: center; }
+            }
+        </style>
+
+        <script>
+            function scalePreviewScreens() {
+                const modalContent = document.getElementById('previewModalContent');
+                const wrap = document.getElementById('previewScaleWrap');
+                // Each preview is 250x550, with 32px gap between, so total width ~ 532px
+                const padding = 80; // for modal padding, scrollbar, etc
+                const availW = window.innerWidth - padding;
+                const availH = window.innerHeight - 180; // for modal header, etc
+                let scale = 1;
+                if (availW < 532 || availH < 550) {
+                    scale = Math.min(availW / 532, availH / 550, 1);
+                }
+                wrap.style.transform = `scale(${scale})`;
+                wrap.style.transformOrigin = 'top center';
+                modalContent.style.overflow = scale < 1 ? 'auto' : 'visible';
+            }
+            window.addEventListener('resize', scalePreviewScreens);
+        </script>
+
+        <hr>
+
+        <h3>All Posts</h3>
+        <div class="filters">
+            <div class="filter-group">
+                <label for="filterCategory">Filter by category</label>
+                <select id="filterCategory">
+                    <option value="">All categories</option>
+                    {% for category in categories %}
+                    <option value="{{ category }}">{{ category }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="filterDate">Filter by date</label>
+                <input type="date" id="filterDate">
+            </div>
+        </div>
+
+        <div style="overflow-x:auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Headline</th>
+                        <th>Author</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="postsBody"></tbody>
+            </table>
+        </div>
+
+        <!-- Edit Modal -->
+        <div id="editModal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn" onclick="closeEditModal()">×</span>
+                <h2>Edit Post</h2>
+                <form id="editForm">
+                    <input type="hidden" id="editPostId">
+                    <label for="editHeadline">Headline (supports emojis and links) <span style="color:#666;font-size:1rem;">(optional)</span></label>
+                    <input type="text" id="editHeadline" placeholder="e.g. 🎉 New Event!">
+
+                    <label for="editCategory">Category</label>
+                    <select id="editCategory">
+                        <option value="">Select a category</option>
+                        {% for category in categories %}
+                        <option value="{{ category }}">{{ category }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <label for="editDescription">Description (supports emojis and links, e.g. https://...)</label>
+                    <textarea id="editDescription" rows="4" placeholder="e.g. Details here 😊 https://navitasys.com"></textarea>
+
+                    <label for="editImage">Images (optional)</label>
+                    <input type="file" id="editImage" accept="image/*" multiple>
+                    <div id="editImagePreview"></div>
+                    <div style="display: flex; gap: 16px; align-items: center; margin-top: 20px;">
+                        <button type="button" id="editShowPreviewBtn" style="background: linear-gradient(135deg, #43A047 0%, #388E3C 100%); padding: 12px 20px; border-radius: 8px; color: white; font-weight: 600; box-shadow: 0 4px 12px rgba(67, 160, 71, 0.3);">
+                            👁️ Show Preview
+                        </button>
+                        <button type="submit" style="background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);">
+                            Update Post
+                        </button>
+                    </div>
+                    <div id="editMessage"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    let allPosts = [];
+    let editSelectedFiles = [];
+    let postsLoading = false;
+
+    function escapeHTML(str) {
+        return str ? str.replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;') : '';
+    }
+
+    function linkify(text) {
+        return text ? text.replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank">$1</a>') : '';
+    }
+
+    function isEditable(postDate) {
+        const now = new Date();
+        const postTime = new Date(postDate);
+        const hoursDiff = (now - postTime) / (1000 * 60 * 60);
+        return hoursDiff <= 2;
+    }
+
+    function getCategoryClass(category) {
+        return category ? `category-${category}` : '';
+    }
+
+    async function fetchPosts() {
+        postsLoading = true;
+        renderPosts([]);
+        const res = await fetch('/api/news/all');
+        allPosts = await res.json();
+        postsLoading = false;
+        renderPosts(allPosts);
+    }
+
+    function renderPosts(posts) {
+        const tbody = document.getElementById('postsBody');
+        tbody.innerHTML = '';
+        if (postsLoading) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td colspan="5" style="text-align:center; padding: 40px;">
+                    <div style="display: inline-block; width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid #1976D2; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                    <div style="margin-top: 16px; color: #666; font-weight: 500;">Loading posts...</div>
+                </td>`;
+            tbody.appendChild(tr);
+            return;
+        }
+        posts.forEach(post => {
+            const escapedHeadline = escapeHTML(post.headline || '');
+            const linkedHeadline = linkify(escapedHeadline);
+            const editDisabled = isEditable(post.date) ? '' : 'disabled';
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${post.date}</td>
+                <td>${post.category ? `<span class="category-badge ${getCategoryClass(post.category)}">${post.category}</span>` : ''}</td>
+                <td>${linkedHeadline}</td>
+                <td>${post.author || ''}</td>
+                <td>
+                    <button onclick="openEditModal('${post.id}')" ${editDisabled}>
+                        ${editDisabled ? 'Edit (2h expired)' : 'Edit'}
+                    </button>
+                    <button onclick="previewPost('${post.id}')" style="background:#2196F3;margin-left:8px;">Preview</button>
+                    <button onclick="deletePost('${post.id}')" style="background:#D32F2F;margin-left:8px;">Delete</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function filterPosts() {
+        const categoryFilter = document.getElementById('filterCategory').value;
+        const dateFilter = document.getElementById('filterDate').value;
+
+        const filteredPosts = allPosts.filter(post => {
+            const categoryMatch = !categoryFilter || post.category === categoryFilter;
+            const dateMatch = !dateFilter || post.date.startsWith(dateFilter);
+            return categoryMatch && dateMatch;
+        });
+
+        renderPosts(filteredPosts);
+    }
+
+    document.getElementById('filterCategory').addEventListener('change', filterPosts);
+    document.getElementById('filterDate').addEventListener('input', filterPosts);
+
+    const imageInput = document.getElementById('image');
+    const imagePreview = document.getElementById('imagePreview');
+    let selectedFiles = [];
+
+    imageInput.addEventListener('change', function(e) {
+        selectedFiles = Array.from(this.files);
+        renderImagePreview();
+    });
+
+    function renderImagePreview() {
+        imagePreview.innerHTML = '';
+        selectedFiles.forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                imagePreview.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    const editImageInput = document.getElementById('editImage');
+    const editImagePreview = document.getElementById('editImagePreview');
+
+    editImageInput.addEventListener('change', function(e) {
+        editSelectedFiles = Array.from(this.files);
+        renderEditImagePreview();
+    });
+
+    function renderEditImagePreview() {
+        editImagePreview.innerHTML = '';
+        editSelectedFiles.forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                editImagePreview.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    document.getElementById('newsForm').onsubmit = async function(e) {
+        e.preventDefault();
+        const headline = document.getElementById('headline').value;
+        const category = document.getElementById('category').value;
+        const description = document.getElementById('description').value;
+        const messageDiv = document.getElementById('message');
+        messageDiv.textContent = '';
+
+        if (!headline && !description && selectedFiles.length === 0) {
+            messageDiv.textContent = 'Please provide at least a headline, description, or image.';
+            messageDiv.className = 'error';
+            return;
+        }
+
+        try {
+            const formData = new FormData();
+            formData.append('headline', headline);
+            formData.append('category', category);
+            formData.append('description', description);
+            selectedFiles.forEach(file => {
+                formData.append('images', file);
+            });
+
+            const res = await fetch('/api/news', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (res.ok) {
+                messageDiv.textContent = 'News pushed successfully!';
+                messageDiv.className = 'success';
+                this.reset();
+                selectedFiles = [];
+                imagePreview.innerHTML = '';
+                fetchPosts();
+            } else {
+                const err = await res.json();
+                messageDiv.textContent = err.error || 'Error pushing news.';
+                messageDiv.className = 'error';
+            }
+        } catch (err) {
+            messageDiv.textContent = 'Network error.';
+            messageDiv.className = 'error';
+        }
+    };
+
+    function openEditModal(postId) {
+        const post = allPosts.find(p => p.id === postId);
+        if (!post) {
+            alert('Post not found.');
+            return;
+        }
+
+        document.getElementById('editPostId').value = post.id;
+        document.getElementById('editHeadline').value = post.headline || '';
+        document.getElementById('editCategory').value = post.category || '';
+        document.getElementById('editDescription').value = post.description || '';
+
+        editImagePreview.innerHTML = '';
+        editSelectedFiles = [];
+        if (post.image_urls && post.image_urls.length > 0) {
+            post.image_urls.forEach(url => {
+                const img = document.createElement('img');
+                img.src = url;
+                editImagePreview.appendChild(img);
+            });
+        }
+
+        document.getElementById('editModal').style.display = 'flex'; // Ensure modal uses flex
+    }
+
+    function closeEditModal() {
+        document.getElementById('editModal').style.display = 'none';
+        document.getElementById('editForm').reset();
+        editImagePreview.innerHTML = '';
+        editSelectedFiles = [];
+        document.getElementById('editMessage').textContent = '';
+    }
+
+    document.getElementById('editForm').onsubmit = async function(e) {
+        e.preventDefault();
+        const postId = document.getElementById('editPostId').value;
+        const headline = document.getElementById('editHeadline').value;
+        const category = document.getElementById('editCategory').value;
+        const description = document.getElementById('editDescription').value;
+        const messageDiv = document.getElementById('editMessage');
+        messageDiv.textContent = '';
+
+        if (!headline && !description && editSelectedFiles.length === 0) {
+            messageDiv.textContent = 'Please provide at least a headline, description, or image.';
+            messageDiv.className = 'error';
+            return;
+        }
+
+        try {
+            const formData = new FormData();
+            formData.append('headline', headline);
+            formData.append('category', category);
+            formData.append('description', description);
+            editSelectedFiles.forEach(file => {
+                formData.append('images', file);
+            });
+
+            const res = await fetch(`/api/news/edit/${postId}`, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (res.ok) {
+                messageDiv.textContent = 'Post updated successfully!';
+                messageDiv.className = 'success';
+                this.reset();
+                editSelectedFiles = [];
+                editImagePreview.innerHTML = '';
+                fetchPosts();
+                setTimeout(closeEditModal, 1000);
+            } else {
+                const err = await res.json();
+                messageDiv.textContent = err.error || 'Error updating post.';
+                messageDiv.className = 'error';
+            }
+        } catch (err) {
+            messageDiv.textContent = 'Network error.';
+            messageDiv.className = 'error';
+        }
+    };
+
+    async function deletePost(postId) {
+        if (!confirm('Are you sure you want to delete this post?')) return;
+        try {
+            const res = await fetch(`/api/news/delete/${postId}`, {
+                method: 'DELETE'
+            });
+            if (res.ok) {
+                fetchPosts();
+            } else {
+                alert('Failed to delete post.');
+            }
+        } catch (err) {
+            alert('Network error.');
+        }
+    }
+
+    // Assign Admin functionality
+    document.getElementById('assignAdminBtn').addEventListener('click', function() {
+        const form = document.getElementById('assignAdminForm');
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    });
+
+    document.getElementById('assignAdminForm').onsubmit = async function(e) {
+        e.preventDefault();
+        const empId = document.getElementById('adminEmpId').value;
+        const messageDiv = document.getElementById('assignMessage');
+        messageDiv.textContent = '';
+
+        if (!empId) {
+            messageDiv.textContent = 'Please enter an Employee ID.';
+            messageDiv.className = 'error';
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/assign_admin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ empId: empId })
+            });
+
+            if (res.ok) {
+                messageDiv.textContent = 'Admin access assigned successfully!';
+                messageDiv.className = 'success';
+                this.reset();
+                setTimeout(() => {
+                    messageDiv.textContent = '';
+                }, 3000);
+            } else {
+                const err = await res.json();
+                messageDiv.textContent = err.error || 'Error assigning admin access.';
+                messageDiv.className = 'error';
+            }
+        } catch (err) {
+            messageDiv.textContent = 'Network error.';
+            messageDiv.className = 'error';
+        }
+    };
+
+    function closePreviewModal() {
+        document.getElementById('previewModal').style.display = 'none';
+    }
+
+    function getPreviewDate() {
+      // Use current date/time for preview
+      const now = new Date();
+      return now.toLocaleString([], { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+    }
+
+    function renderPreview(mode) {
+      // mode: 'light' or 'dark'
+      const headline = document.getElementById('headline').value;
+      const description = document.getElementById('description').value;
+      const images = selectedFiles;
+      const date = getPreviewDate();
+      const bgColor = mode === 'light' ? '#E0F2F1' : '#1A1A1A';
+      const cardColor = mode === 'light' ? '#fff' : '#232323';
+      const headlineColor = mode === 'light' ? '#000' : '#fff';
+      const descColor = mode === 'light' ? '#222' : '#fff';
+      const dateColor = mode === 'light' ? '#333' : '#fff';
+      const bookmarkBg = mode === 'light' ? '#fff' : '#000';
+      const bookmarkIcon = mode === 'light' ? '#888' : '#fff';
+      const borderColor = mode === 'light' ? '#eee' : '#333';
+      const navitasysColor = mode === 'light' ? '#0057A7' : '#fff';
+
+      // In renderPreview, fix the preview layout:
+      // - App bar: always show menu button (left) and NAVITASYS (right).
+      // - Card: remove margin and border-radius at the top, so it attaches to the app bar.
+      // - Headline: always visible, single-line scrollable.
+      // - Tight layout, no vertical gaps.
+      // - Bookmark/date row always at the bottom.
+      //
+      // Replace the relevant section with:
+      return (() => {
+        // Dynamic heights
+        const previewHeight = 550; // px
+        let imgH = 0, headlineH = 0, descH = 0;
+        if (images.length > 0 && headline && description) {
+          imgH = Math.round(previewHeight * 0.5);
+          headlineH = Math.round(previewHeight * 0.12);
+          descH = Math.round(previewHeight * 0.18);
+        } else if (images.length > 0 && headline && !description) {
+          imgH = Math.round(previewHeight * 0.7);
+          headlineH = Math.round(previewHeight * 0.10);
+          descH = 0;
+        } else if (images.length > 0 && !headline && !description) {
+          imgH = previewHeight - 44 - 32; // appbar + bottom row
+          headlineH = 0;
+          descH = 0;
+        } else {
+          imgH = 0;
+          headlineH = headline ? Math.round(previewHeight * 0.12) : 0;
+          descH = description ? Math.round(previewHeight * 0.18) : 0;
+        }
+        return `
+          <div style="display:flex;flex-direction:column;height:100%;width:100%;background:${bgColor};">
+            <div style="height:44px;display:flex;align-items:center;justify-content:space-between;background:${mode==='light' ? '#0057A7' : '#232323'};padding:0 10px;">
+              <svg width="22" height="22" viewBox="0 0 24 24"><path fill="#fff" d="M4 6h16M4 12h16M4 18h16"/></svg>
+              <span style="font-family:'Archivo Black',sans-serif;font-size:15px;font-weight:bold;color:#fff;letter-spacing:1.2px;">NAVITASYS</span>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-start;background:${cardColor};border-radius:0 0 18px 18px;box-shadow:0 4px 16px rgba(0,0,0,0.10);margin:0 8px 8px 8px;overflow:hidden;">
+              ${(imgH > 0) ? `<div style='width:100%;height:${imgH}px;overflow:hidden;position:relative;'><img id='previewImg${mode}0' src='' style='width:100%;height:100%;object-fit:cover;border-radius:18px 18px 0 0;background:#eee;display:block;margin:0 auto;'/><button class='preview-arrow' id='prevImg${mode}' style='position:absolute;top:50%;left:4px;transform:translateY(-50%);background:rgba(0,0,0,0.3);border:none;border-radius:50%;width:18px;height:18px;color:#fff;font-size:12px;display:none;z-index:2;'>&#8592;</button><button class='preview-arrow' id='nextImg${mode}' style='position:absolute;top:50%;right:4px;transform:translateY(-50%);background:rgba(0,0,0,0.3);border:none;border-radius:50%;width:18px;height:18px;color:#fff;font-size:12px;display:none;z-index:2;'>&#8594;</button><div id='previewDots${mode}' style='position:absolute;bottom:2px;left:0;right:0;text-align:center;'></div></div>` : ''}
+              ${(headlineH > 0) ? `<div style='height:${headlineH}px;padding:2px 8px 0 8px;display:flex;align-items:center;'><div style='width:100%;overflow-x:auto;white-space:nowrap;'><span style='font-family:Montserrat,sans-serif;font-size:13px;font-weight:bold;color:${headlineColor};letter-spacing:0.2px;line-height:1.2;display:inline-block;'>${escapeHTML(headline)}${headline.length > 50 ? ' ...' : ''}</span></div></div>` : ''}
+              ${(descH > 0) ? `<div style='height:${descH}px;overflow-y:auto;padding:0 8px 2px 8px;'><span style='font-family:Open Sans,sans-serif;font-size:11px;color:${descColor};line-height:1.4;'>${escapeHTML(description)}</span></div>` : ''}
+              <div style='flex:1;'></div>
+              <div style='display:flex;justify-content:space-between;align-items:center;padding:0 8px 6px 6px;'>
+                <div style='background:${bookmarkBg};border-radius:50%;width:15px;height:15px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.08);'>
+                  <svg width='9' height='9' viewBox='0 0 24 24'><path fill='${bookmarkIcon}' d='M6 2a2 2 0 0 0-2 2v16.764a1 1 0 0 0 1.447.894L12 19.118l6.553 2.54A1 1 0 0 0 20 20.764V4a2 2 0 0 0-2-2H6zm0 2h12v15.382l-5.553-2.152a1 1 0 0 0-.894 0L6 19.382V4z'/></svg>
+                </div>
+                <div style='font-family:Open Sans,sans-serif;font-size:10px;color:${dateColor};'>${date}</div>
+              </div>
+            </div>
+          </div>
+        `;
+      })();
+    }
+
+    function renderPreviewImages(mode) {
+      // Render images in the preview carousel
+      const images = selectedFiles;
+      if (images.length === 0) return;
+      let idx = 0;
+      const imgEl = document.getElementById(`previewImg${mode}0`);
+      const prevBtn = document.getElementById(`prevImg${mode}`);
+      const nextBtn = document.getElementById(`nextImg${mode}`);
+      const dotsDiv = document.getElementById(`previewDots${mode}`);
+      function updateImg() {
+        const file = images[idx];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          imgEl.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+        prevBtn.style.display = idx > 0 ? '' : 'none';
+        nextBtn.style.display = idx < images.length - 1 ? '' : 'none';
+        // Dots
+        dotsDiv.innerHTML = '';
+        for (let i = 0; i < images.length; i++) {
+          const dot = document.createElement('span');
+          dot.style.display = 'inline-block';
+          dot.style.width = '8px';
+          dot.style.height = '8px';
+          dot.style.margin = '0 2px';
+          dot.style.borderRadius = '50%';
+          dot.style.background = i === idx ? '#fff' : '#bbb';
+          dot.style.border = '1px solid #888';
+          dot.style.cursor = 'pointer';
+          dot.onclick = () => { idx = i; updateImg(); };
+          dotsDiv.appendChild(dot);
+        }
+      }
+      prevBtn.onclick = () => { if (idx > 0) { idx--; updateImg(); } };
+      nextBtn.onclick = () => { if (idx < images.length - 1) { idx++; updateImg(); } };
+      updateImg();
+    }
+
+    function renderEditPreview(mode) {
+      // mode: 'light' or 'dark'
+      const headline = document.getElementById('editHeadline').value;
+      const description = document.getElementById('editDescription').value;
+      const images = editSelectedFiles;
+      const date = getPreviewDate();
+      const bgColor = mode === 'light' ? '#E0F2F1' : '#1A1A1A';
+      const cardColor = mode === 'light' ? '#fff' : '#232323';
+      const headlineColor = mode === 'light' ? '#000' : '#fff';
+      const descColor = mode === 'light' ? '#222' : '#fff';
+      const dateColor = mode === 'light' ? '#333' : '#fff';
+      const bookmarkBg = mode === 'light' ? '#fff' : '#000';
+      const bookmarkIcon = mode === 'light' ? '#888' : '#fff';
+      const borderColor = mode === 'light' ? '#eee' : '#333';
+      const navitasysColor = mode === 'light' ? '#0057A7' : '#fff';
+
+      // Get existing images from the edit preview
+      const existingImages = [];
+      const editImagePreview = document.getElementById('editImagePreview');
+      const existingImgElements = editImagePreview.querySelectorAll('img');
+      existingImgElements.forEach(img => {
+        existingImages.push(img.src);
+      });
+
+      // Combine new files with existing images
+      const allImages = [...existingImages, ...images];
+      
+      // Dynamic heights
+      const previewHeight = 550; // px
+      let imgH = 0, headlineH = 0, descH = 0;
+      if (allImages.length > 0 && headline && description) {
+        imgH = Math.round(previewHeight * 0.5);
+        headlineH = Math.round(previewHeight * 0.12);
+        descH = Math.round(previewHeight * 0.18);
+      } else if (allImages.length > 0 && headline && !description) {
+        imgH = Math.round(previewHeight * 0.7);
+        headlineH = Math.round(previewHeight * 0.10);
+        descH = 0;
+      } else if (allImages.length > 0 && !headline && !description) {
+        imgH = previewHeight - 44 - 32; // appbar + bottom row
+        headlineH = 0;
+        descH = 0;
+      } else {
+        imgH = 0;
+        headlineH = headline ? Math.round(previewHeight * 0.12) : 0;
+        descH = description ? Math.round(previewHeight * 0.18) : 0;
+      }
+      return `
+        <div style="display:flex;flex-direction:column;height:100%;width:100%;background:${bgColor};">
+          <div style="height:44px;display:flex;align-items:center;justify-content:space-between;background:${mode==='light' ? '#0057A7' : '#232323'};padding:0 10px;">
+            <svg width="22" height="22" viewBox="0 0 24 24"><path fill="#fff" d="M4 6h16M4 12h16M4 18h16"/></svg>
+            <span style="font-family:'Archivo Black',sans-serif;font-size:15px;font-weight:bold;color:#fff;letter-spacing:1.2px;">NAVITASYS</span>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-start;background:${cardColor};border-radius:0 0 18px 18px;box-shadow:0 4px 16px rgba(0,0,0,0.10);margin:0 8px 8px 8px;overflow:hidden;">
+            ${(imgH > 0) ? `<div style='width:100%;height:${imgH}px;overflow:hidden;position:relative;'><img id='previewImg${mode}0' src='' style='width:100%;height:100%;object-fit:cover;border-radius:18px 18px 0 0;background:#eee;display:block;margin:0 auto;'/><button class='preview-arrow' id='prevImg${mode}' style='position:absolute;top:50%;left:4px;transform:translateY(-50%);background:rgba(0,0,0,0.3);border:none;border-radius:50%;width:18px;height:18px;color:#fff;font-size:12px;display:none;z-index:2;'>&#8592;</button><button class='preview-arrow' id='nextImg${mode}' style='position:absolute;top:50%;right:4px;transform:translateY(-50%);background:rgba(0,0,0,0.3);border:none;border-radius:50%;width:18px;height:18px;color:#fff;font-size:12px;display:none;z-index:2;'>&#8594;</button><div id='previewDots${mode}' style='position:absolute;bottom:2px;left:0;right:0;text-align:center;'></div></div>` : ''}
+            ${(headlineH > 0) ? `<div style='height:${headlineH}px;padding:2px 8px 0 8px;display:flex;align-items:center;'><div style='width:100%;overflow-x:auto;white-space:nowrap;'><span style='font-family:Montserrat,sans-serif;font-size:13px;font-weight:bold;color:${headlineColor};letter-spacing:0.2px;line-height:1.2;display:inline-block;'>${escapeHTML(headline)}${headline.length > 50 ? ' ...' : ''}</span></div></div>` : ''}
+            ${(descH > 0) ? `<div style='height:${descH}px;overflow-y:auto;padding:0 8px 2px 8px;'><span style='font-family:Open Sans,sans-serif;font-size:11px;color:${descColor};line-height:1.4;'>${escapeHTML(description)}</span></div>` : ''}
+            <div style='flex:1;'></div>
+            <div style='display:flex;justify-content:space-between;align-items:center;padding:0 8px 6px 6px;'>
+              <div style='background:${bookmarkBg};border-radius:50%;width:15px;height:15px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.08);'>
+                <svg width='9' height='9' viewBox='0 0 24 24'><path fill='${bookmarkIcon}' d='M6 2a2 2 0 0 0-2 2v16.764a1 1 0 0 0 1.447.894L12 19.118l6.553 2.54A1 1 0 0 0 20 20.764V4a2 2 0 0 0-2-2H6zm0 2h12v15.382l-5.553-2.152a1 1 0 0 0-.894 0L6 19.382V4z'/></svg>
+              </div>
+              <div style='font-family:Open Sans,sans-serif;font-size:10px;color:${dateColor};'>${date}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderEditPreviewImages(mode) {
+      // Render images in the edit preview carousel
+      const images = editSelectedFiles;
+      
+      // Get existing images from the edit preview
+      const existingImages = [];
+      const editImagePreview = document.getElementById('editImagePreview');
+      const existingImgElements = editImagePreview.querySelectorAll('img');
+      existingImgElements.forEach(img => {
+        existingImages.push(img.src);
+      });
+
+      // Combine existing images with new files
+      const allImages = [...existingImages, ...images];
+      
+      if (allImages.length === 0) return;
+      
+      let idx = 0;
+      const imgEl = document.getElementById(`previewImg${mode}0`);
+      const prevBtn = document.getElementById(`prevImg${mode}`);
+      const nextBtn = document.getElementById(`nextImg${mode}`);
+      const dotsDiv = document.getElementById(`previewDots${mode}`);
+      
+      function updateImg() {
+        const imageSrc = allImages[idx];
+        
+        // If it's a new file, use FileReader, otherwise use the existing src
+        if (idx >= existingImages.length) {
+          const file = images[idx - existingImages.length];
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            imgEl.src = e.target.result;
+          };
+          reader.readAsDataURL(file);
+        } else {
+          imgEl.src = imageSrc;
+        }
+        
+        prevBtn.style.display = idx > 0 ? '' : 'none';
+        nextBtn.style.display = idx < allImages.length - 1 ? '' : 'none';
+        
+        // Dots
+        dotsDiv.innerHTML = '';
+        for (let i = 0; i < allImages.length; i++) {
+          const dot = document.createElement('span');
+          dot.style.display = 'inline-block';
+          dot.style.width = '8px';
+          dot.style.height = '8px';
+          dot.style.margin = '0 2px';
+          dot.style.borderRadius = '50%';
+          dot.style.background = i === idx ? '#fff' : '#bbb';
+          dot.style.border = '1px solid #888';
+          dot.style.cursor = 'pointer';
+          dot.onclick = () => { idx = i; updateImg(); };
+          dotsDiv.appendChild(dot);
+        }
+      }
+      
+      prevBtn.onclick = () => { if (idx > 0) { idx--; updateImg(); } };
+      nextBtn.onclick = () => { if (idx < allImages.length - 1) { idx++; updateImg(); } };
+      updateImg();
+    }
+
+    document.getElementById('showPreviewBtn').onclick = function() {
+      // Render previews
+      document.getElementById('previewLight').innerHTML = renderPreview('light');
+      document.getElementById('previewDark').innerHTML = renderPreview('dark');
+      setTimeout(() => {
+        renderPreviewImages('light');
+        renderPreviewImages('dark');
+        scalePreviewScreens();
+      }, 50);
+      document.getElementById('previewModal').style.display = 'flex';
+    };
+
+    document.getElementById('editShowPreviewBtn').onclick = function() {
+      // Render edit previews
+      document.getElementById('previewLight').innerHTML = renderEditPreview('light');
+      document.getElementById('previewDark').innerHTML = renderEditPreview('dark');
+      setTimeout(() => {
+        renderEditPreviewImages('light');
+        renderEditPreviewImages('dark');
+        scalePreviewScreens();
+      }, 50);
+      document.getElementById('previewModal').style.display = 'flex';
+    };
+
+    // Post Preview Modal
+    function previewPost(postId) {
+        const post = allPosts.find(p => p.id === postId);
+        if (!post) {
+            alert('Post not found.');
+            return;
+        }
+
+        // Set modal content
+        document.getElementById('postPreviewModal').style.display = 'flex';
+        
+        // Render previews
+        document.getElementById('postPreviewLight').innerHTML = renderPostPreview(post, 'light');
+        document.getElementById('postPreviewDark').innerHTML = renderPostPreview(post, 'dark');
+        
+        // Load images if they exist
+        setTimeout(() => {
+            renderPostPreviewImages(post, 'light');
+            renderPostPreviewImages(post, 'dark');
+        }, 50);
+    }
+
+    function renderPostPreview(post, mode) {
+        const headline = post.headline || '';
+        const description = post.description || '';
+        const imageUrls = post.image_urls || [];
+        const date = post.date || new Date().toLocaleString();
+        
+        const bgColor = mode === 'light' ? '#E0F2F1' : '#1A1A1A';
+        const cardColor = mode === 'light' ? '#fff' : '#232323';
+        const headlineColor = mode === 'light' ? '#000' : '#fff';
+        const descColor = mode === 'light' ? '#222' : '#fff';
+        const dateColor = mode === 'light' ? '#333' : '#fff';
+        const bookmarkBg = mode === 'light' ? '#fff' : '#000';
+        const bookmarkIcon = mode === 'light' ? '#888' : '#fff';
+
+        // Calculate heights based on content
+        const previewHeight = 550;
+        let imgH = 0, headlineH = 0, descH = 0;
+        
+        if (imageUrls.length > 0 && headline && description) {
+            imgH = Math.round(previewHeight * 0.5);
+            headlineH = Math.round(previewHeight * 0.12);
+            descH = Math.round(previewHeight * 0.18);
+        } else if (imageUrls.length > 0 && headline && !description) {
+            imgH = Math.round(previewHeight * 0.7);
+            headlineH = Math.round(previewHeight * 0.10);
+            descH = 0;
+        } else if (imageUrls.length > 0 && !headline && !description) {
+            imgH = previewHeight - 44 - 32; // appbar + bottom row
+            headlineH = 0;
+            descH = 0;
+        } else {
+            imgH = 0;
+            headlineH = headline ? Math.round(previewHeight * 0.12) : 0;
+            descH = description ? Math.round(previewHeight * 0.18) : 0;
+        }
+
+        return `
+            <div style="display:flex;flex-direction:column;height:100%;width:100%;background:${bgColor};">
+                <div style="height:44px;display:flex;align-items:center;justify-content:space-between;background:${mode==='light' ? '#0057A7' : '#232323'};padding:0 10px;">
+                    <svg width="22" height="22" viewBox="0 0 24 24"><path fill="#fff" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    <span style="font-family:'Archivo Black',sans-serif;font-size:15px;font-weight:bold;color:#fff;letter-spacing:1.2px;">NAVITASYS</span>
+                </div>
+                <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-start;background:${cardColor};border-radius:0 0 18px 18px;box-shadow:0 4px 16px rgba(0,0,0,0.10);margin:0 8px 8px 8px;overflow:hidden;">
+                    ${(imgH > 0) ? `<div style='width:100%;height:${imgH}px;overflow:hidden;position:relative;'><img id='postPreviewImg${mode}0' src='' style='width:100%;height:100%;object-fit:cover;border-radius:18px 18px 0 0;background:#eee;display:block;margin:0 auto;'/><button class='preview-arrow' id='postPrevImg${mode}' style='position:absolute;top:50%;left:4px;transform:translateY(-50%);background:rgba(0,0,0,0.3);border:none;border-radius:50%;width:18px;height:18px;color:#fff;font-size:12px;display:none;z-index:2;'>&#8592;</button><button class='preview-arrow' id='postNextImg${mode}' style='position:absolute;top:50%;right:4px;transform:translateY(-50%);background:rgba(0,0,0,0.3);border:none;border-radius:50%;width:18px;height:18px;color:#fff;font-size:12px;display:none;z-index:2;'>&#8594;</button><div id='postPreviewDots${mode}' style='position:absolute;bottom:2px;left:0;right:0;text-align:center;'></div></div>` : ''}
+                    ${(headlineH > 0) ? `<div style='height:${headlineH}px;padding:2px 8px 0 8px;display:flex;align-items:center;'><div style='width:100%;overflow-x:auto;white-space:nowrap;'><span style='font-family:Montserrat,sans-serif;font-size:13px;font-weight:bold;color:${headlineColor};letter-spacing:0.2px;line-height:1.2;display:inline-block;'>${escapeHTML(headline)}${headline.length > 50 ? ' ...' : ''}</span></div></div>` : ''}
+                    ${(descH > 0) ? `<div style='height:${descH}px;overflow-y:auto;padding:0 8px 2px 8px;'><span style='font-family:Open Sans,sans-serif;font-size:11px;color:${descColor};line-height:1.4;'>${escapeHTML(description)}</span></div>` : ''}
+                    <div style='flex:1;'></div>
+                    <div style='display:flex;justify-content:space-between;align-items:center;padding:0 8px 6px 6px;'>
+                        <div style='background:${bookmarkBg};border-radius:50%;width:15px;height:15px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.08);'>
+                            <svg width='9' height='9' viewBox='0 0 24 24'><path fill='${bookmarkIcon}' d='M6 2a2 2 0 0 0-2 2v16.764a1 1 0 0 0 1.447.894L12 19.118l6.553 2.54A1 1 0 0 0 20 20.764V4a2 2 0 0 0-2-2H6zm0 2h12v15.382l-5.553-2.152a1 1 0 0 0-.894 0L6 19.382V4z'/></svg>
+                        </div>
+                        <div style='font-family:Open Sans,sans-serif;font-size:10px;color:${dateColor};'>${date}</div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderPostPreviewImages(post, mode) {
+        const imageUrls = post.image_urls || [];
+        
+        if (imageUrls.length === 0) return;
+        
+        let idx = 0;
+        const imgEl = document.getElementById(`postPreviewImg${mode}0`);
+        const prevBtn = document.getElementById(`postPrevImg${mode}`);
+        const nextBtn = document.getElementById(`postNextImg${mode}`);
+        const dotsDiv = document.getElementById(`postPreviewDots${mode}`);
+        
+        function updateImg() {
+            imgEl.src = imageUrls[idx];
+            
+            prevBtn.style.display = idx > 0 ? '' : 'none';
+            nextBtn.style.display = idx < imageUrls.length - 1 ? '' : 'none';
+            
+            // Dots
+            dotsDiv.innerHTML = '';
+            for (let i = 0; i < imageUrls.length; i++) {
+                const dot = document.createElement('span');
+                dot.style.display = 'inline-block';
+                dot.style.width = '8px';
+                dot.style.height = '8px';
+                dot.style.margin = '0 2px';
+                dot.style.borderRadius = '50%';
+                dot.style.background = i === idx ? '#fff' : '#bbb';
+                dot.style.border = '1px solid #888';
+                dot.style.cursor = 'pointer';
+                dot.onclick = () => { idx = i; updateImg(); };
+                dotsDiv.appendChild(dot);
+            }
+        }
+        
+        prevBtn.onclick = () => { if (idx > 0) { idx--; updateImg(); } };
+        nextBtn.onclick = () => { if (idx < imageUrls.length - 1) { idx++; updateImg(); } };
+        updateImg();
+    }
+
+    function closePostPreviewModal() {
+        document.getElementById('postPreviewModal').style.display = 'none';
+    }
+
+    fetchPosts();
+    </script>
+</body>
+</html>
