@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: inbrief-backend
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.9.16
+      - key: FLASK_APP
+        value: app.py
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: SAP_API_USERNAME
+        value: api_user@navitasysi
+      - key: SAP_API_PASSWORD
+        value: api@1234
+      - key: SAP_API_BASE_URL
+        value: https://api44.sapsf.com/odata/v2
+      - key: ALLOWED_ADMIN_IDS
+        value: 9025857,9025676,9023422
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: LOG_LEVEL
+        value: INFO 
