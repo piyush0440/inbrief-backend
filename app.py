@@ -11,9 +11,19 @@ import logging
 from logging.handlers import RotatingFileHandler
 import traceback
 from dotenv import load_dotenv
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
 # Load environment variables
 load_dotenv()
+
+# Cloudinary Configuration
+cloudinary.config(
+    cloud_name="dttnc46ds",
+    api_key="564877812975431",
+    api_secret="AJ1yEajONIlJA5cwgLc-gP2fIto"
+)
 
 # Configure logging
 logging.basicConfig(
@@ -322,12 +332,22 @@ def add_news():
     if images:
         for image in images:
             if image:
-                filename = f"{uuid.uuid4()}_{image.filename}"
-                save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                image.save(save_path)
-                # Use consistent base URL for image URLs
-                base_url = 'http://192.168.239.225:5000'  # Your actual IP address
-                image_urls.append(f'{base_url}/static/uploads/{filename}')
+                try:
+                    # Upload to Cloudinary with your specific configuration
+                    result = cloudinary.uploader.upload(
+                        image,
+                        public_id=f"test/image/{uuid.uuid4()}",  # Use your asset folder path
+                        folder="test/image",  # Your configured asset folder
+                        resource_type="auto",
+                        upload_preset="inbrief_app"  # Your upload preset
+                    )
+                    # Get the secure URL from Cloudinary
+                    cloudinary_url = result['secure_url']
+                    image_urls.append(cloudinary_url)
+                    logger.info(f"Image uploaded to Cloudinary: {cloudinary_url}")
+                except Exception as e:
+                    logger.error(f"Error uploading image to Cloudinary: {e}")
+                    return jsonify({'error': 'Failed to upload image'}), 500
                 
     post_id = generate_post_id()
     date_str = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -374,12 +394,22 @@ def edit_news(post_id):
                 image_urls = []
                 for image in images:
                     if image:
-                        filename = f"{uuid.uuid4()}_{image.filename}"
-                        save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                        image.save(save_path)
-                        # Use consistent base URL for image URLs
-                        base_url = request.host_url.rstrip('/')  # Use the current request's host URL
-                        image_urls.append(f'{base_url}/static/uploads/{filename}')
+                        try:
+                            # Upload to Cloudinary with your specific configuration
+                            result = cloudinary.uploader.upload(
+                                image,
+                                public_id=f"test/image/{uuid.uuid4()}",  # Use your asset folder path
+                                folder="test/image",  # Your configured asset folder
+                                resource_type="auto",
+                                upload_preset="inbrief_app"  # Your upload preset
+                            )
+                            # Get the secure URL from Cloudinary
+                            cloudinary_url = result['secure_url']
+                            image_urls.append(cloudinary_url)
+                            logger.info(f"Image uploaded to Cloudinary: {cloudinary_url}")
+                        except Exception as e:
+                            logger.error(f"Error uploading image to Cloudinary: {e}")
+                            return jsonify({'error': 'Failed to upload image'}), 500
                 post['image_urls'] = image_urls
                 
             return jsonify({'success': True, 'item': post}), 200
@@ -392,14 +422,23 @@ def edit_news(post_id):
 def delete_news(post_id):
     for i, post in enumerate(news_posts):
         if post['id'] == post_id:
-            # Remove images from disk if present
+            # Remove images from Cloudinary if present
             image_urls = post.get('image_urls', [])
             for url in image_urls:
-                if url:
-                    filename = url.split('/static/uploads/')[-1]
-                    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                    if os.path.exists(file_path):
-                        os.remove(file_path)
+                if url and 'cloudinary.com' in url:
+                    try:
+                        # Extract public_id from Cloudinary URL
+                        # URL format: https://res.cloudinary.com/dttnc46ds/image/upload/v1234567890/test/image/uuid.jpg
+                        parts = url.split('/')
+                        if len(parts) >= 8:
+                            public_id = '/'.join(parts[7:])  # Get the part after 'upload/'
+                            # Remove file extension
+                            public_id = public_id.rsplit('.', 1)[0]
+                            # Delete from Cloudinary
+                            result = cloudinary.uploader.destroy(public_id)
+                            logger.info(f"Deleted image from Cloudinary: {public_id}")
+                    except Exception as e:
+                        logger.error(f"Error deleting image from Cloudinary: {e}")
             news_posts.pop(i)
             return jsonify({'success': True}), 200
     return jsonify({'error': 'Post not found'}), 404
