@@ -1,6 +1,5 @@
-from flask import Flask, request, jsonify, render_template, redirect, url_for, session
+from flask import Flask, request, jsonify, render_template, send_from_directory, redirect, url_for, session
 from flask_cors import CORS
-from flask_sqlalchemy import SQLAlchemy
 import os
 import uuid
 from datetime import datetime, timedelta
@@ -12,8 +11,6 @@ import logging
 from logging.handlers import RotatingFileHandler
 import traceback
 from dotenv import load_dotenv
-import cloudinary
-import cloudinary.uploader
 
 # Load environment variables
 load_dotenv()
@@ -29,22 +26,13 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-app = Flask(__name__, template_folder='templates')
-app.secret_key = os.getenv('SECRET_KEY', 'super-secret-key-123')
+app = Flask(__name__, template_folder='templates', static_folder='static')
+app.secret_key = os.getenv('SECRET_KEY', 'super-secret-key-123')  # Use environment variable
+UPLOAD_FOLDER = os.path.join(app.static_folder, 'uploads')
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# Database configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///inbrief.db')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
-
-# Cloudinary configuration
-cloudinary.config(
-    cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME'),
-    api_key=os.getenv('CLOUDINARY_API_KEY'),
-    api_secret=os.getenv('CLOUDINARY_API_SECRET')
-)
-
-# Configure CORS
+# Configure CORS to allow requests from any origin
 CORS(app, resources={
     r"/*": {
         "origins": "*",
@@ -61,70 +49,30 @@ def after_request(response):
     response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
     return response
 
-# Database Models
-class NewsPost(db.Model):
-    id = db.Column(db.String(36), primary_key=True)
-    headline = db.Column(db.String(500))
-    description = db.Column(db.Text)
-    image_urls = db.Column(db.JSON)
-    date = db.Column(db.DateTime, default=datetime.utcnow)
-    category = db.Column(db.String(50))
-    author = db.Column(db.String(100))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'headline': self.headline,
-            'description': self.description,
-            'image_urls': self.image_urls or [],
-            'date': self.date.strftime('%Y-%m-%d %H:%M:%S') if self.date else None,
-            'category': self.category,
-            'author': self.author
-        }
-
-# SAP API credentials
+# SAP API credentials from environment variables
 SAP_API_USERNAME = os.getenv('SAP_API_USERNAME', "api_user@navitasysi")
 SAP_API_PASSWORD = os.getenv('SAP_API_PASSWORD', "api@1234")
 SAP_API_BASE_URL = os.getenv('SAP_API_BASE_URL', "https://api44.sapsf.com/odata/v2")
 
-# Allowed employee IDs for admin access
-ALLOWED_ADMIN_IDS = {'9025857', '9025676', '9023422'}
+# Allowed employee IDs for admin access from environment variable
+ALLOWED_ADMIN_IDS_STR = os.getenv('ALLOWED_ADMIN_IDS', '9025857,9025676,9023422')
+ALLOWED_ADMIN_IDS = set(ALLOWED_ADMIN_IDS_STR.split(','))
 
 # Post categories
 POST_CATEGORIES = ['Finance', 'Healthcare', 'Achievement', 'Notice', 'Urgent']
+
+# In-memory storage for demo (replace with DB in production)
+news_posts = []
 
 def generate_post_id():
     return str(uuid.uuid4())
 
 def is_post_editable(post_date):
     """Check if post is within 2 hour edit window"""
-    if isinstance(post_date, str):
-        post_time = datetime.strptime(post_date, '%Y-%m-%d %H:%M:%S')
-    else:
-        post_time = post_date
+    post_time = datetime.strptime(post_date, '%Y-%m-%d %H:%M:%S')
     return datetime.now() - post_time <= timedelta(hours=2)
 
-def upload_image_to_cloudinary(file):
-    """Upload image to Cloudinary and return URL"""
-    try:
-        result = cloudinary.uploader.upload(file, folder="inbrief")
-        return result['secure_url']
-    except Exception as e:
-        logger.error(f"Error uploading to Cloudinary: {e}")
-        return None
-
-# Health check endpoint
-@app.route('/health', methods=['GET'])
-def health_check():
-    return jsonify({
-        'status': 'healthy',
-        'timestamp': datetime.now().isoformat(),
-        'database': 'connected' if db.engine.execute('SELECT 1').scalar() else 'disconnected'
-    })
-
-# Employee verification endpoint
+# Add back the mobile app verification endpoint
 @app.route('/api/verify_employee', methods=['GET'])
 def verify_employee():
     emp_id = request.headers.get('empId')
@@ -349,12 +297,10 @@ def dashboard():
 # List all posts
 @app.route('/api/news/all', methods=['GET'])
 def get_all_news():
-    try:
-        posts = NewsPost.query.order_by(NewsPost.date.desc()).all()
-        return jsonify([post.to_dict() for post in posts])
-    except Exception as e:
-        logger.error(f"Error fetching news: {e}")
-        return jsonify({'error': 'Failed to fetch news'}), 500
+    all_posts = [post.copy() for post in news_posts]
+    # Sort by date (descending)
+    all_posts.sort(key=lambda x: x.get('date', ''), reverse=True)
+    return jsonify(all_posts)
 
 # Add a new post
 @app.route('/api/news', methods=['POST'])
@@ -376,100 +322,91 @@ def add_news():
     if images:
         for image in images:
             if image:
-                # Upload to Cloudinary
-                image_url = upload_image_to_cloudinary(image)
-                if image_url:
-                    image_urls.append(image_url)
-                else:
-                    logger.error(f"Failed to upload image: {image.filename}")
+                filename = f"{uuid.uuid4()}_{image.filename}"
+                save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                image.save(save_path)
+                # Use consistent base URL for image URLs
+                base_url = 'http://192.168.239.225:5000'  # Your actual IP address
+                image_urls.append(f'{base_url}/static/uploads/{filename}')
                 
     post_id = generate_post_id()
-    news_item = NewsPost(
-        id=post_id,
-        headline=headline,
-        description=description,
-        image_urls=image_urls,
-        category=category,
-        author=session.get('employee_name')
-    )
-    
-    try:
-        db.session.add(news_item)
-        db.session.commit()
-        return jsonify({'success': True, 'item': news_item.to_dict()}), 201
-    except Exception as e:
-        db.session.rollback()
-        logger.error(f"Error adding news: {e}")
-        return jsonify({'error': 'Failed to add news'}), 500
+    date_str = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    news_item = {
+        'id': post_id,
+        'headline': headline,
+        'description': description,
+        'image_urls': image_urls,
+        'date': date_str,
+        'category': category,  # Only stored in backend, not sent to mobile app
+        'author': session.get('employee_name')
+    }
+    news_posts.insert(0, news_item)
+    return jsonify({'success': True, 'item': news_item}), 201
 
 # Edit a post by id
 @app.route('/api/news/edit/<post_id>', methods=['POST'])
 @login_required
 def edit_news(post_id):
-    post = NewsPost.query.get(post_id)
-    if not post:
-        return jsonify({'error': 'Post not found'}), 404
-        
-    # Check if post is older than 2 hours
-    if not is_post_editable(post.date):
-        return jsonify({'error': 'Posts can only be edited within 2 hours of creation'}), 403
-        
-    headline = request.form.get('headline', '')
-    description = request.form.get('description', '')
-    category = request.form.get('category')
-    images = request.files.getlist('images')
-    
-    # Allow empty headline but require at least one of: headline, description, or image
-    if not headline and not description and not images:
-        return jsonify({'error': 'Post must have at least a headline, description, or image.'}), 400
-        
-    if category and category not in POST_CATEGORIES:
-        return jsonify({'error': 'Invalid category'}), 400
-        
-    post.headline = headline
-    post.description = description
-    if category:
-        post.category = category
-        
-    if images and len(images) > 0:
-        image_urls = []
-        for image in images:
-            if image:
-                # Upload to Cloudinary
-                image_url = upload_image_to_cloudinary(image)
-                if image_url:
-                    image_urls.append(image_url)
-        if image_urls:
-            post.image_urls = image_urls
+    for post in news_posts:
+        if post['id'] == post_id:
+            # Check if post is older than 2 hours
+            if not is_post_editable(post['date']):
+                return jsonify({'error': 'Posts can only be edited within 2 hours of creation'}), 403
+                
+            headline = request.form.get('headline', '')
+            description = request.form.get('description', '')
+            category = request.form.get('category')
+            images = request.files.getlist('images')
             
-    post.updated_at = datetime.utcnow()
-    
-    try:
-        db.session.commit()
-        return jsonify({'success': True, 'item': post.to_dict()}), 200
-    except Exception as e:
-        db.session.rollback()
-        logger.error(f"Error editing news: {e}")
-        return jsonify({'error': 'Failed to edit news'}), 500
+            # Allow empty headline but require at least one of: headline, description, or image
+            if not headline and not description and not images:
+                return jsonify({'error': 'Post must have at least a headline, description, or image.'}), 400
+                
+            if category and category not in POST_CATEGORIES:
+                return jsonify({'error': 'Invalid category'}), 400
+                
+            post['headline'] = headline
+            post['description'] = description
+            if category:
+                post['category'] = category
+                
+            if images and len(images) > 0:
+                image_urls = []
+                for image in images:
+                    if image:
+                        filename = f"{uuid.uuid4()}_{image.filename}"
+                        save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                        image.save(save_path)
+                        # Use consistent base URL for image URLs
+                        base_url = request.host_url.rstrip('/')  # Use the current request's host URL
+                        image_urls.append(f'{base_url}/static/uploads/{filename}')
+                post['image_urls'] = image_urls
+                
+            return jsonify({'success': True, 'item': post}), 200
+            
+    return jsonify({'error': 'Post not found'}), 404
 
 # Delete a post
 @app.route('/api/news/delete/<post_id>', methods=['DELETE'])
 @login_required
 def delete_news(post_id):
-    post = NewsPost.query.get(post_id)
-    if not post:
-        return jsonify({'error': 'Post not found'}), 404
-        
-    try:
-        # Note: Cloudinary images are not automatically deleted
-        # You may want to implement cleanup logic here
-        db.session.delete(post)
-        db.session.commit()
-        return jsonify({'success': True}), 200
-    except Exception as e:
-        db.session.rollback()
-        logger.error(f"Error deleting news: {e}")
-        return jsonify({'error': 'Failed to delete news'}), 500
+    for i, post in enumerate(news_posts):
+        if post['id'] == post_id:
+            # Remove images from disk if present
+            image_urls = post.get('image_urls', [])
+            for url in image_urls:
+                if url:
+                    filename = url.split('/static/uploads/')[-1]
+                    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                    if os.path.exists(file_path):
+                        os.remove(file_path)
+            news_posts.pop(i)
+            return jsonify({'success': True}), 200
+    return jsonify({'error': 'Post not found'}), 404
+
+@app.route('/static/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 # Assign admin access
 @app.route('/api/assign_admin', methods=['POST'])
@@ -522,16 +459,10 @@ def assign_admin():
         logger.error(traceback.format_exc())
         return jsonify({'error': 'Internal server error'}), 500
 
-# Initialize database
-def init_db():
-    with app.app_context():
-        db.create_all()
-        logger.info("Database initialized")
-
 if __name__ == '__main__':
-    # Initialize database
-    init_db()
+    # Get port from environment variable for production deployment
+    port = int(os.getenv('PORT', 5000))
+    debug = os.getenv('FLASK_ENV') == 'development'
     
     # Use threaded=True for better handling of concurrent requests
-    port = int(os.getenv('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=False, threaded=True) 
+    app.run(host='0.0.0.0', port=port, debug=debug, threaded=True)
