@@ -394,24 +394,6 @@
         </form>
 
         <!-- Post Preview Modal -->
-        <div id="postPreviewModal" class="modal">
-            <div class="modal-content" style="max-width: 98vw; max-height: 98vh; overflow: auto;">
-                <span class="close-btn" onclick="closePostPreviewModal()">×</span>
-                <h2 style="text-align:center;">Post Preview - How it appears in the app</h2>
-                <div style="display: flex; flex-wrap: wrap; gap: 32px; justify-content: center; align-items: flex-start;">
-                    <div>
-                        <div style="text-align:center; margin-bottom:8px; font-weight:600;">Light Mode</div>
-                        <div id="postPreviewLight" class="previewScreen" style="width: 250px; height: 550px; border: 2px solid #bbb; border-radius: 32px; background: #E0F2F1; box-shadow: 0 4px 24px rgba(0,0,0,0.12); overflow: hidden; position: relative;"></div>
-                    </div>
-                    <div>
-                        <div style="text-align:center; margin-bottom:8px; font-weight:600;">Dark Mode</div>
-                        <div id="postPreviewDark" class="previewScreen" style="width: 250px; height: 550px; border: 2px solid #222; border-radius: 32px; background: #1A1A1A; box-shadow: 0 4px 24px rgba(0,0,0,0.18); overflow: hidden; position: relative;"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Original Preview Modal -->
         <div id="previewModal" class="modal">
             <div class="modal-content" id="previewModalContent" style="max-width: 98vw; max-height: 98vh; overflow: auto;">
                 <span class="close-btn" onclick="closePreviewModal()">×</span>
@@ -590,7 +572,6 @@
                     <button onclick="openEditModal('${post.id}')" ${editDisabled}>
                         ${editDisabled ? 'Edit (2h expired)' : 'Edit'}
                     </button>
-                    <button onclick="previewPost('${post.id}')" style="background:#2196F3;margin-left:8px;">Preview</button>
                     <button onclick="deletePost('${post.id}')" style="background:#D32F2F;margin-left:8px;">Delete</button>
                 </td>
             `;
@@ -1117,129 +1098,6 @@
       }, 50);
       document.getElementById('previewModal').style.display = 'flex';
     };
-
-    // Post Preview Modal
-    function previewPost(postId) {
-        const post = allPosts.find(p => p.id === postId);
-        if (!post) {
-            alert('Post not found.');
-            return;
-        }
-
-        // Set modal content
-        document.getElementById('postPreviewModal').style.display = 'flex';
-        
-        // Render previews
-        document.getElementById('postPreviewLight').innerHTML = renderPostPreview(post, 'light');
-        document.getElementById('postPreviewDark').innerHTML = renderPostPreview(post, 'dark');
-        
-        // Load images if they exist
-        setTimeout(() => {
-            renderPostPreviewImages(post, 'light');
-            renderPostPreviewImages(post, 'dark');
-        }, 50);
-    }
-
-    function renderPostPreview(post, mode) {
-        const headline = post.headline || '';
-        const description = post.description || '';
-        const imageUrls = post.image_urls || [];
-        const date = post.date || new Date().toLocaleString();
-        
-        const bgColor = mode === 'light' ? '#E0F2F1' : '#1A1A1A';
-        const cardColor = mode === 'light' ? '#fff' : '#232323';
-        const headlineColor = mode === 'light' ? '#000' : '#fff';
-        const descColor = mode === 'light' ? '#222' : '#fff';
-        const dateColor = mode === 'light' ? '#333' : '#fff';
-        const bookmarkBg = mode === 'light' ? '#fff' : '#000';
-        const bookmarkIcon = mode === 'light' ? '#888' : '#fff';
-
-        // Calculate heights based on content
-        const previewHeight = 550;
-        let imgH = 0, headlineH = 0, descH = 0;
-        
-        if (imageUrls.length > 0 && headline && description) {
-            imgH = Math.round(previewHeight * 0.5);
-            headlineH = Math.round(previewHeight * 0.12);
-            descH = Math.round(previewHeight * 0.18);
-        } else if (imageUrls.length > 0 && headline && !description) {
-            imgH = Math.round(previewHeight * 0.7);
-            headlineH = Math.round(previewHeight * 0.10);
-            descH = 0;
-        } else if (imageUrls.length > 0 && !headline && !description) {
-            imgH = previewHeight - 44 - 32; // appbar + bottom row
-            headlineH = 0;
-            descH = 0;
-        } else {
-            imgH = 0;
-            headlineH = headline ? Math.round(previewHeight * 0.12) : 0;
-            descH = description ? Math.round(previewHeight * 0.18) : 0;
-        }
-
-        return `
-            <div style="display:flex;flex-direction:column;height:100%;width:100%;background:${bgColor};">
-                <div style="height:44px;display:flex;align-items:center;justify-content:space-between;background:${mode==='light' ? '#0057A7' : '#232323'};padding:0 10px;">
-                    <svg width="22" height="22" viewBox="0 0 24 24"><path fill="#fff" d="M4 6h16M4 12h16M4 18h16"/></svg>
-                    <span style="font-family:'Archivo Black',sans-serif;font-size:15px;font-weight:bold;color:#fff;letter-spacing:1.2px;">NAVITASYS</span>
-                </div>
-                <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-start;background:${cardColor};border-radius:0 0 18px 18px;box-shadow:0 4px 16px rgba(0,0,0,0.10);margin:0 8px 8px 8px;overflow:hidden;">
-                    ${(imgH > 0) ? `<div style='width:100%;height:${imgH}px;overflow:hidden;position:relative;'><img id='postPreviewImg${mode}0' src='' style='width:100%;height:100%;object-fit:cover;border-radius:18px 18px 0 0;background:#eee;display:block;margin:0 auto;'/><button class='preview-arrow' id='postPrevImg${mode}' style='position:absolute;top:50%;left:4px;transform:translateY(-50%);background:rgba(0,0,0,0.3);border:none;border-radius:50%;width:18px;height:18px;color:#fff;font-size:12px;display:none;z-index:2;'>&#8592;</button><button class='preview-arrow' id='postNextImg${mode}' style='position:absolute;top:50%;right:4px;transform:translateY(-50%);background:rgba(0,0,0,0.3);border:none;border-radius:50%;width:18px;height:18px;color:#fff;font-size:12px;display:none;z-index:2;'>&#8594;</button><div id='postPreviewDots${mode}' style='position:absolute;bottom:2px;left:0;right:0;text-align:center;'></div></div>` : ''}
-                    ${(headlineH > 0) ? `<div style='height:${headlineH}px;padding:2px 8px 0 8px;display:flex;align-items:center;'><div style='width:100%;overflow-x:auto;white-space:nowrap;'><span style='font-family:Montserrat,sans-serif;font-size:13px;font-weight:bold;color:${headlineColor};letter-spacing:0.2px;line-height:1.2;display:inline-block;'>${escapeHTML(headline)}${headline.length > 50 ? ' ...' : ''}</span></div></div>` : ''}
-                    ${(descH > 0) ? `<div style='height:${descH}px;overflow-y:auto;padding:0 8px 2px 8px;'><span style='font-family:Open Sans,sans-serif;font-size:11px;color:${descColor};line-height:1.4;'>${escapeHTML(description)}</span></div>` : ''}
-                    <div style='flex:1;'></div>
-                    <div style='display:flex;justify-content:space-between;align-items:center;padding:0 8px 6px 6px;'>
-                        <div style='background:${bookmarkBg};border-radius:50%;width:15px;height:15px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.08);'>
-                            <svg width='9' height='9' viewBox='0 0 24 24'><path fill='${bookmarkIcon}' d='M6 2a2 2 0 0 0-2 2v16.764a1 1 0 0 0 1.447.894L12 19.118l6.553 2.54A1 1 0 0 0 20 20.764V4a2 2 0 0 0-2-2H6zm0 2h12v15.382l-5.553-2.152a1 1 0 0 0-.894 0L6 19.382V4z'/></svg>
-                        </div>
-                        <div style='font-family:Open Sans,sans-serif;font-size:10px;color:${dateColor};'>${date}</div>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-
-    function renderPostPreviewImages(post, mode) {
-        const imageUrls = post.image_urls || [];
-        
-        if (imageUrls.length === 0) return;
-        
-        let idx = 0;
-        const imgEl = document.getElementById(`postPreviewImg${mode}0`);
-        const prevBtn = document.getElementById(`postPrevImg${mode}`);
-        const nextBtn = document.getElementById(`postNextImg${mode}`);
-        const dotsDiv = document.getElementById(`postPreviewDots${mode}`);
-        
-        function updateImg() {
-            imgEl.src = imageUrls[idx];
-            
-            prevBtn.style.display = idx > 0 ? '' : 'none';
-            nextBtn.style.display = idx < imageUrls.length - 1 ? '' : 'none';
-            
-            // Dots
-            dotsDiv.innerHTML = '';
-            for (let i = 0; i < imageUrls.length; i++) {
-                const dot = document.createElement('span');
-                dot.style.display = 'inline-block';
-                dot.style.width = '8px';
-                dot.style.height = '8px';
-                dot.style.margin = '0 2px';
-                dot.style.borderRadius = '50%';
-                dot.style.background = i === idx ? '#fff' : '#bbb';
-                dot.style.border = '1px solid #888';
-                dot.style.cursor = 'pointer';
-                dot.onclick = () => { idx = i; updateImg(); };
-                dotsDiv.appendChild(dot);
-            }
-        }
-        
-        prevBtn.onclick = () => { if (idx > 0) { idx--; updateImg(); } };
-        nextBtn.onclick = () => { if (idx < imageUrls.length - 1) { idx++; updateImg(); } };
-        updateImg();
-    }
-
-    function closePostPreviewModal() {
-        document.getElementById('postPreviewModal').style.display = 'none';
-    }
 
     fetchPosts();
     </script>
