@@ -3,7 +3,7 @@ from flask_cors import CORS
 import os
 import uuid
 from datetime import datetime, timedelta
-import pytz
+from zoneinfo import ZoneInfo
 import requests
 from requests.auth import HTTPBasicAuth
 import json
@@ -80,9 +80,8 @@ def generate_post_id():
 
 def is_post_editable(post_date):
     """Check if post is within 2 hour edit window"""
-    ist = pytz.timezone('Asia/Kolkata')
-    post_time = datetime.strptime(post_date, '%Y-%m-%d %H:%M:%S')
-    post_time = ist.localize(post_time)
+    ist = ZoneInfo('Asia/Kolkata')
+    post_time = datetime.strptime(post_date, '%Y-%m-%d %H:%M:%S').replace(tzinfo=ist)
     current_time = datetime.now(ist)
     return current_time - post_time <= timedelta(hours=2)
 
@@ -354,7 +353,7 @@ def add_news():
                     return jsonify({'error': 'Failed to upload image'}), 500
                 
     post_id = generate_post_id()
-    ist = pytz.timezone('Asia/Kolkata')
+    ist = ZoneInfo('Asia/Kolkata')
     date_str = datetime.now(ist).strftime('%Y-%m-%d %H:%M:%S')
     news_item = {
         'id': post_id,
