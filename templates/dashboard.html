@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -308,6 +309,69 @@
         .admin-assign-section {
             margin-bottom: 24px;
         }
+
+        /* Statistics Section Styles */
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 32px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(25, 118, 210, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(25, 118, 210, 0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(25, 118, 210, 0.15);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-content {
+            flex: 1;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1976D2;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 500;
+        }
         @media (max-width: 600px) {
             .container {
                 margin: 20px;
@@ -328,6 +392,301 @@
             th, td {
                 padding: 12px;
             }
+        }
+
+        /* Checkbox styles */
+        .post-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #1976D2;
+            border: 2px solid #1976D2;
+            border-radius: 3px;
+            transition: all 0.2s ease;
+        }
+
+        .post-checkbox:checked {
+            background-color: #1976D2;
+            border-color: #1976D2;
+        }
+
+        .post-checkbox:hover {
+            transform: scale(1.1);
+            box-shadow: 0 2px 8px rgba(25, 118, 210, 0.3);
+        }
+
+        /* Admin Management Styles */
+        .admin-management-content {
+            padding: 20px 0;
+        }
+
+        .admin-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            padding: 16px;
+            background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(25, 118, 210, 0.1);
+        }
+
+        .admin-stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .admin-stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .admin-stat-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1976D2;
+        }
+
+        .admin-actions {
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .add-admin-btn {
+            background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+
+        .add-admin-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+        }
+
+        .admin-list-section h3 {
+            color: #1976D2;
+            margin-bottom: 16px;
+            font-size: 1.3rem;
+        }
+
+        .admin-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+
+        .admin-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            border-bottom: 1px solid #e0e0e0;
+            transition: background-color 0.2s ease;
+        }
+
+        .admin-item:last-child {
+            border-bottom: none;
+        }
+
+        .admin-item:hover {
+            background: #f5f5f5;
+        }
+
+        .admin-id {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .current-admin {
+            color: #1976D2;
+            font-size: 0.9rem;
+            font-style: italic;
+        }
+
+        .remove-admin-btn {
+            background: linear-gradient(135deg, #F44336 0%, #D32F2F 100%);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .remove-admin-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
+        }
+
+        .stat-hint {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 4px;
+            opacity: 0.8;
+        }
+
+        /* Notification Styles */
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        /* Enhanced Professional Styles */
+        .container {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.98) 100%);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border: 1px solid rgba(25, 118, 210, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(25, 118, 210, 0.05), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .stat-card:hover::before {
+            left: 100%;
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .stat-number {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #1976D2;
+            margin-bottom: 8px;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        /* Enhanced Form Styles */
+        form {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(25, 118, 210, 0.1);
+            margin-bottom: 32px;
+        }
+
+        input, textarea, select {
+            background: #ffffff;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        input:focus, textarea:focus, select:focus {
+            border-color: #1976D2;
+            box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+            outline: none;
+        }
+
+        button {
+            background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(25, 118, 210, 0.4);
+        }
+
+        /* Enhanced Table Styles */
+        table {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(25, 118, 210, 0.1);
+        }
+
+        th {
+            background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
+            color: white;
+            font-weight: 600;
+            padding: 20px 16px;
+            font-size: 1.1rem;
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.2s ease;
+        }
+
+        tr:hover td {
+            background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
         }
     </style>
 </head>
@@ -365,6 +724,39 @@
             <span>InBrief</span>
             <span class="admin-text">Admin Dashboard</span>
         </h1>
+
+        <!-- Statistics Section -->
+        <div class="stats-section">
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-content">
+                    <div class="stat-number" id="totalPosts">0</div>
+                    <div class="stat-label">Total Posts</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📅</div>
+                <div class="stat-content">
+                    <div class="stat-number" id="todayPosts">0</div>
+                    <div class="stat-label">Today's Posts</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🖼️</div>
+                <div class="stat-content">
+                    <div class="stat-number" id="totalImages">0</div>
+                    <div class="stat-label">Total Images</div>
+                </div>
+            </div>
+            <div class="stat-card" onclick="showAdminManagement()" style="cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                <div class="stat-icon">👥</div>
+                <div class="stat-content">
+                    <div class="stat-number" id="activeAdmins">0</div>
+                    <div class="stat-label">Active Admins</div>
+                    <div class="stat-hint">Click to manage</div>
+                </div>
+            </div>
+        </div>
 
         <form id="newsForm">
             <label for="headline">Headline (supports emojis and links) <span style="color:#666;font-size:1rem;">(optional)</span></label>
@@ -436,10 +828,57 @@
             window.addEventListener('resize', scalePreviewScreens);
         </script>
 
+        <!-- Admin Management Modal -->
+        <div id="adminModal" class="modal">
+            <div class="modal-content" style="max-width: 600px;">
+                <span class="close-btn" onclick="closeAdminModal()">×</span>
+                <h2 style="text-align:center; color: #1976D2; margin-bottom: 24px;">👥 Admin Management</h2>
+                
+                <div class="admin-management-content">
+                    <div class="admin-stats">
+                        <div class="admin-stat-item">
+                            <span class="admin-stat-label">Total Admins:</span>
+                            <span class="admin-stat-value" id="modalAdminCount">0</span>
+                        </div>
+                        <div class="admin-stat-item">
+                            <span class="admin-stat-label">Your ID:</span>
+                            <span class="admin-stat-value">{{ session.get("employee_id", "") }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="admin-actions">
+                        <button onclick="addAdmin()" class="add-admin-btn">
+                            ➕ Add New Admin
+                        </button>
+                    </div>
+                    
+                    <div class="admin-list-section">
+                        <h3>Current Admins</h3>
+                        <div id="adminListContainer" class="admin-list">
+                            <!-- Admin list will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <hr>
 
         <h3>All Posts</h3>
+        <div class="bulk-actions" style="margin-bottom: 20px;">
+            <button id="selectAllBtn" style="background: linear-gradient(135deg, #FF9800 0%, #F57C00 100%); margin-right: 10px;">
+                📋 Select All
+            </button>
+            <button id="deleteSelectedBtn" style="background: linear-gradient(135deg, #D32F2F 0%, #B71C1C 100%); margin-right: 10px; display: none;">
+                🗑️ Delete Selected
+            </button>
+            <span id="selectedCount" style="color: #666; font-size: 0.9rem;"></span>
+        </div>
         <div class="filters">
+            <div class="filter-group">
+                <label for="searchPosts">Search Posts</label>
+                <input type="text" id="searchPosts" placeholder="Search by headline, description, or author...">
+            </div>
             <div class="filter-group">
                 <label for="filterCategory">Filter by category</label>
                 <select id="filterCategory">
@@ -512,6 +951,7 @@
     let allPosts = [];
     let editSelectedFiles = [];
     let postsLoading = false;
+    let selectedPosts = new Set();
 
     function escapeHTML(str) {
         return str ? str.replace(/&/g, '&amp;')
@@ -526,9 +966,24 @@
     }
 
     function isEditable(postDate) {
+        // Get current time in IST
         const now = new Date();
-        const postTime = new Date(postDate);
-        const hoursDiff = (now - postTime) / (1000 * 60 * 60);
+        const istOptions = {
+            timeZone: 'Asia/Kolkata',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        };
+        
+        // Convert post date to IST timezone for comparison
+        const postTime = new Date(postDate + ' Asia/Kolkata');
+        const currentTime = new Date(now.toLocaleString('en-IN', istOptions));
+        
+        const hoursDiff = (currentTime - postTime) / (1000 * 60 * 60);
         return hoursDiff <= 2;
     }
 
@@ -543,6 +998,47 @@
         allPosts = await res.json();
         postsLoading = false;
         renderPosts(allPosts);
+        updateStatistics();
+        updateBulkActions();
+    }
+
+    function updateStatistics() {
+        const totalPosts = allPosts.length;
+        
+        // Get today's date in IST timezone
+        const now = new Date();
+        const istOptions = {
+            timeZone: 'Asia/Kolkata',
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+        };
+        const todayIST = now.toLocaleDateString('en-IN', istOptions);
+        const today = todayIST.split('/').reverse().join('-'); // Convert DD/MM/YYYY to YYYY-MM-DD
+        
+        const todayPosts = allPosts.filter(post => post.date.startsWith(today)).length;
+        const totalImages = allPosts.reduce((sum, post) => sum + (post.image_urls ? post.image_urls.length : 0), 0);
+        const activeAdmins = adminList.length;
+
+        document.getElementById('totalPosts').textContent = totalPosts;
+        document.getElementById('todayPosts').textContent = todayPosts;
+        document.getElementById('totalImages').textContent = totalImages;
+        document.getElementById('activeAdmins').textContent = activeAdmins;
+    }
+
+    function showAdminManagement() {
+        const modal = document.getElementById('adminModal');
+        if (modal) {
+            modal.style.display = 'block';
+            loadAdminList();
+        }
+    }
+
+    function closeAdminModal() {
+        const modal = document.getElementById('adminModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
     }
 
     function renderPosts(posts) {
@@ -562,9 +1058,16 @@
             const escapedHeadline = escapeHTML(post.headline || '');
             const linkedHeadline = linkify(escapedHeadline);
             const editDisabled = isEditable(post.date) ? '' : 'disabled';
+            const isSelected = selectedPosts.has(post.id);
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td>${post.date}</td>
+                <td>
+                    <input type="checkbox" class="post-checkbox" value="${post.id}" 
+                           ${isSelected ? 'checked' : ''} 
+                           onchange="togglePostSelection('${post.id}')" 
+                           style="margin-right: 8px;">
+                    ${post.date}
+                </td>
                 <td>${post.category ? `<span class="category-badge ${getCategoryClass(post.category)}">${post.category}</span>` : ''}</td>
                 <td>${linkedHeadline}</td>
                 <td>${post.author || ''}</td>
@@ -580,20 +1083,31 @@
     }
 
     function filterPosts() {
+        const searchTerm = document.getElementById('searchPosts').value.toLowerCase();
         const categoryFilter = document.getElementById('filterCategory').value;
         const dateFilter = document.getElementById('filterDate').value;
 
         const filteredPosts = allPosts.filter(post => {
+            const searchMatch = !searchTerm || 
+                (post.headline && post.headline.toLowerCase().includes(searchTerm)) ||
+                (post.description && post.description.toLowerCase().includes(searchTerm)) ||
+                (post.author && post.author.toLowerCase().includes(searchTerm));
             const categoryMatch = !categoryFilter || post.category === categoryFilter;
             const dateMatch = !dateFilter || post.date.startsWith(dateFilter);
-            return categoryMatch && dateMatch;
+            return searchMatch && categoryMatch && dateMatch;
         });
 
         renderPosts(filteredPosts);
+        updateBulkActions();
     }
 
+    document.getElementById('searchPosts').addEventListener('input', filterPosts);
     document.getElementById('filterCategory').addEventListener('change', filterPosts);
     document.getElementById('filterDate').addEventListener('input', filterPosts);
+
+    // Bulk operations event listeners
+    document.getElementById('selectAllBtn').addEventListener('click', toggleSelectAll);
+    document.getElementById('deleteSelectedBtn').addEventListener('click', deleteSelectedPosts);
 
     const imageInput = document.getElementById('image');
     const imagePreview = document.getElementById('imagePreview');
@@ -831,9 +1345,147 @@
     }
 
     function getPreviewDate() {
-      // Use current date/time for preview
+      // Get current time in India timezone (IST)
       const now = new Date();
-      return now.toLocaleString([], { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+      
+      // Format the date in IST timezone
+      const istOptions = {
+        timeZone: 'Asia/Kolkata',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      };
+      
+      // Use toLocaleString with explicit timezone
+      return now.toLocaleString('en-IN', istOptions);
+    }
+
+    // Admin management functions
+    let adminList = ['9025857', '9025676', '9023422']; // Default admin list
+    let currentAdminId = '{{ session.get("employee_id", "") }}';
+
+    async function loadAdminList() {
+        try {
+            const response = await fetch('/api/admin/list');
+            if (response.ok) {
+                const data = await response.json();
+                adminList = data.admins || adminList;
+                updateAdminDisplay();
+            }
+        } catch (error) {
+            console.error('Error loading admin list:', error);
+        }
+    }
+
+    function updateAdminDisplay() {
+        const adminCount = document.getElementById('activeAdmins');
+        const adminListContainer = document.getElementById('adminListContainer');
+        const modalAdminCount = document.getElementById('modalAdminCount');
+        
+        if (adminCount) {
+            adminCount.textContent = adminList.length;
+        }
+        
+        if (modalAdminCount) {
+            modalAdminCount.textContent = adminList.length;
+        }
+        
+        if (adminListContainer) {
+            adminListContainer.innerHTML = adminList.map(adminId => `
+                <div class="admin-item" data-admin-id="${adminId}">
+                    <span class="admin-id">${adminId}</span>
+                    ${adminId === currentAdminId ? '<span class="current-admin">(You)</span>' : ''}
+                    ${adminId !== currentAdminId ? `<button class="remove-admin-btn" onclick="removeAdmin('${adminId}')">Remove</button>` : ''}
+                </div>
+            `).join('');
+        }
+    }
+
+    async function removeAdmin(adminId) {
+        if (!confirm(`Are you sure you want to remove admin ${adminId}?`)) {
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/admin/remove', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ empId: adminId })
+            });
+
+            if (response.ok) {
+                adminList = adminList.filter(id => id !== adminId);
+                updateAdminDisplay();
+                showNotification('Admin removed successfully', 'success');
+            } else {
+                const error = await response.json();
+                showNotification(error.error || 'Failed to remove admin', 'error');
+            }
+        } catch (error) {
+            console.error('Error removing admin:', error);
+            showNotification('Error removing admin', 'error');
+        }
+    }
+
+    async function addAdmin() {
+        const newAdminId = prompt('Enter Employee ID for new admin:');
+        if (!newAdminId) return;
+
+        try {
+            const response = await fetch('/api/assign_admin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ empId: newAdminId })
+            });
+
+            if (response.ok) {
+                if (!adminList.includes(newAdminId)) {
+                    adminList.push(newAdminId);
+                    updateAdminDisplay();
+                }
+                showNotification('Admin added successfully', 'success');
+            } else {
+                const error = await response.json();
+                showNotification(error.error || 'Failed to add admin', 'error');
+            }
+        } catch (error) {
+            console.error('Error adding admin:', error);
+            showNotification('Error adding admin', 'error');
+        }
+    }
+
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.textContent = message;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 10000;
+            animation: slideIn 0.3s ease-out;
+            ${type === 'success' ? 'background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);' : ''}
+            ${type === 'error' ? 'background: linear-gradient(135deg, #F44336 0%, #D32F2F 100%);' : ''}
+            ${type === 'info' ? 'background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);' : ''}
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.style.animation = 'slideOut 0.3s ease-in';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
     }
 
     function renderPreview(mode) {
@@ -1100,6 +1752,102 @@
     };
 
     fetchPosts();
+    loadAdminList(); // Load admin list on page load
+
+    // Bulk operations functions
+    function toggleSelectAll() {
+        const selectAllBtn = document.getElementById('selectAllBtn');
+        const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
+        const selectedCount = document.getElementById('selectedCount');
+        
+        if (selectedPosts.size === allPosts.length) {
+            // Deselect all
+            selectedPosts.clear();
+            selectAllBtn.textContent = '📋 Select All';
+            deleteSelectedBtn.style.display = 'none';
+            selectedCount.textContent = '';
+        } else {
+            // Select all
+            allPosts.forEach(post => selectedPosts.add(post.id));
+            selectAllBtn.textContent = '☐ Deselect All';
+            deleteSelectedBtn.style.display = 'inline-block';
+            selectedCount.textContent = `${selectedPosts.size} posts selected`;
+        }
+        
+        // Update checkboxes if they exist
+        updateCheckboxes();
+    }
+
+    function updateCheckboxes() {
+        const checkboxes = document.querySelectorAll('.post-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = selectedPosts.has(checkbox.value);
+        });
+    }
+
+    function togglePostSelection(postId) {
+        if (selectedPosts.has(postId)) {
+            selectedPosts.delete(postId);
+        } else {
+            selectedPosts.add(postId);
+        }
+        
+        updateBulkActions();
+    }
+
+    function updateBulkActions() {
+        const selectAllBtn = document.getElementById('selectAllBtn');
+        const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
+        const selectedCount = document.getElementById('selectedCount');
+        
+        if (selectedPosts.size === 0) {
+            selectAllBtn.textContent = '📋 Select All';
+            deleteSelectedBtn.style.display = 'none';
+            selectedCount.textContent = '';
+        } else if (selectedPosts.size === allPosts.length) {
+            selectAllBtn.textContent = '☐ Deselect All';
+            deleteSelectedBtn.style.display = 'inline-block';
+            selectedCount.textContent = `${selectedPosts.size} posts selected`;
+        } else {
+            selectAllBtn.textContent = '📋 Select All';
+            deleteSelectedBtn.style.display = 'inline-block';
+            selectedCount.textContent = `${selectedPosts.size} posts selected`;
+        }
+    }
+
+    async function deleteSelectedPosts() {
+        if (selectedPosts.size === 0) {
+            alert('No posts selected for deletion.');
+            return;
+        }
+        
+        if (!confirm(`Are you sure you want to delete ${selectedPosts.size} selected posts? This action cannot be undone.`)) {
+            return;
+        }
+        
+        try {
+            const deletePromises = Array.from(selectedPosts).map(postId => 
+                fetch(`/api/news/${postId}`, {
+                    method: 'DELETE'
+                })
+            );
+            
+            const results = await Promise.all(deletePromises);
+            const failedDeletions = results.filter(result => !result.ok);
+            
+            if (failedDeletions.length > 0) {
+                alert(`Failed to delete ${failedDeletions.length} posts. Please try again.`);
+            } else {
+                alert(`Successfully deleted ${selectedPosts.size} posts.`);
+                selectedPosts.clear();
+                updateBulkActions();
+                fetchPosts(); // Refresh the posts list
+            }
+        } catch (error) {
+            console.error('Error deleting posts:', error);
+            alert('An error occurred while deleting posts. Please try again.');
+        }
+    }
     </script>
 </body>
 </html>
