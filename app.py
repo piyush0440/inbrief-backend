@@ -3,6 +3,7 @@ from flask_cors import CORS
 import os
 import uuid
 from datetime import datetime, timedelta
+import pytz
 import requests
 from requests.auth import HTTPBasicAuth
 import json
@@ -79,8 +80,11 @@ def generate_post_id():
 
 def is_post_editable(post_date):
     """Check if post is within 2 hour edit window"""
+    ist = pytz.timezone('Asia/Kolkata')
     post_time = datetime.strptime(post_date, '%Y-%m-%d %H:%M:%S')
-    return datetime.now() - post_time <= timedelta(hours=2)
+    post_time = ist.localize(post_time)
+    current_time = datetime.now(ist)
+    return current_time - post_time <= timedelta(hours=2)
 
 # Add back the mobile app verification endpoint
 @app.route('/api/verify_employee', methods=['GET'])
@@ -350,7 +354,8 @@ def add_news():
                     return jsonify({'error': 'Failed to upload image'}), 500
                 
     post_id = generate_post_id()
-    date_str = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    ist = pytz.timezone('Asia/Kolkata')
+    date_str = datetime.now(ist).strftime('%Y-%m-%d %H:%M:%S')
     news_item = {
         'id': post_id,
         'headline': headline,
@@ -495,6 +500,48 @@ def assign_admin():
         return jsonify({'error': 'Failed to connect to SAP API'}), 500
     except Exception as e:
         logger.error(f"Error assigning admin: {e}")
+        logger.error(traceback.format_exc())
+        return jsonify({'error': 'Internal server error'}), 500
+
+# Get admin list
+@app.route('/api/admin/list', methods=['GET'])
+@login_required
+def get_admin_list():
+    try:
+        return jsonify({'admins': list(ALLOWED_ADMIN_IDS)})
+    except Exception as e:
+        logger.error(f"Error getting admin list: {e}")
+        return jsonify({'error': 'Internal server error'}), 500
+
+# Remove admin
+@app.route('/api/admin/remove', methods=['POST'])
+@login_required
+def remove_admin():
+    data = request.get_json()
+    emp_id = data.get('empId')
+
+    if not emp_id:
+        return jsonify({'error': 'Employee ID is required'}), 400
+
+    try:
+        # Verify the requesting user is an admin
+        if session.get('employee_id') not in ALLOWED_ADMIN_IDS:
+            return jsonify({'error': 'Unauthorized to remove admin access'}), 403
+
+        # Prevent removing yourself
+        if emp_id == session.get('employee_id'):
+            return jsonify({'error': 'Cannot remove your own admin access'}), 400
+
+        # Remove from ALLOWED_ADMIN_IDS
+        if emp_id in ALLOWED_ADMIN_IDS:
+            ALLOWED_ADMIN_IDS.remove(emp_id)
+            logger.info(f"Admin access removed from Employee ID: {emp_id} at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+            return jsonify({'success': True})
+        else:
+            return jsonify({'error': 'Employee is not an admin'}), 404
+
+    except Exception as e:
+        logger.error(f"Error removing admin: {e}")
         logger.error(traceback.format_exc())
         return jsonify({'error': 'Internal server error'}), 500
 
