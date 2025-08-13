@@ -544,6 +544,13 @@ def remove_admin():
         logger.error(traceback.format_exc())
         return jsonify({'error': 'Internal server error'}), 500
 
+@app.route('/health', methods=['GET'])
+def health_check():
+    return jsonify({
+        'status': 'UP',
+        'timestamp': datetime.now().isoformat()
+    }), 200
+
 if __name__ == '__main__':
     # Get port from environment variable for production deployment
     port = int(os.getenv('PORT', 5000))
@@ -551,3 +558,4 @@ if __name__ == '__main__':
     
     # Use threaded=True for better handling of concurrent requests
     app.run(host='0.0.0.0', port=port, debug=debug, threaded=True)
+
