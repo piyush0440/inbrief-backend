@@ -4,7 +4,6 @@ services:
     env: python
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app
-    healthCheckPath: /health
     envVars:
       - key: PYTHON_VERSION
         value: 3.9.16
@@ -25,5 +24,8 @@ services:
       - key: CORS_ORIGINS
         value: "*"
       - key: LOG_LEVEL
-
-        value: INFO 
+        value: INFO
+    disk:
+      name: inbrief-data
+      mountPath: /opt/render/project/src/data
+      sizeGB: 1 
